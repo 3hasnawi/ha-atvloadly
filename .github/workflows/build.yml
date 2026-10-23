@@ -1,0 +1,21 @@
+name: Build add-on image
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the add-on image as Home Assistant would
+        run: docker build -t atvloadly-addon atvloadly
+      - name: Start it and check D-Bus, Avahi and the web interface
+        run: |
+          docker run -d --name addon --network host --privileged atvloadly-addon
+          for i in $(seq 1 30); do curl -fsS -o /dev/null http://127.0.0.1:5533/ && break; sleep 2; done
+          docker logs addon
+          docker logs addon 2>&1 | grep -q "Avahi started"
+          curl -fsS -o /dev/null http://127.0.0.1:5533/
