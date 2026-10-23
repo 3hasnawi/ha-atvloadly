@@ -1,0 +1,25 @@
+name: atvloadly
+version: "0.1.0"
+slug: atvloadly
+description: Sideload apps on Apple TV from Home Assistant (wraps bitxeno/atvloadly)
+url: https://github.com/3hasnawi/ha-atvloadly
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: services
+boot: auto
+# Apple TV is found by mDNS on the local network, so the add-on runs on the host network with its own Avahi.
+host_network: true
+# atvloadly runs with seccomp unconfined upstream; a privileged container is the closest Home Assistant offers.
+full_access: true
+apparmor: false
+webui: "http://[HOST]:[PORT:5533]"
+ports:
+  5533/tcp: 5533
+ports_description:
+  5533/tcp: atvloadly web interface
+options:
+  port: 5533
+schema:
+  port: port
