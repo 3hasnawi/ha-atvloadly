@@ -1,5 +1,5 @@
 name: atvloadly
-version: "0.1.0"
+version: "0.1.1"
 slug: atvloadly
 description: Sideload apps on Apple TV from Home Assistant (wraps bitxeno/atvloadly)
 url: https://github.com/3hasnawi/ha-atvloadly
@@ -21,5 +21,7 @@ ports_description:
   5533/tcp: atvloadly web interface
 options:
   port: 5533
+  debug: true
 schema:
   port: port
+  debug: bool
