@@ -18,7 +18,7 @@ echo "[atvloadly add-on] network interfaces:"
 ip -br addr | sed 's/^/[atvloadly add-on]   /'
 
 # Avahi in the foreground of a background job, so its interface lines reach the add-on log.
-avahi-daemon --no-chroot --no-rlimits 2>&1 | sed 's/^/[avahi] /' &
+avahi-daemon --no-chroot --no-rlimits --debug 2>&1 | sed -u 's/^/[avahi] /' &
 sleep 2
 if avahi-daemon --check; then echo "[atvloadly add-on] Avahi started"; else echo "[atvloadly add-on] Avahi failed to start"; fi
 
@@ -27,10 +27,11 @@ if [ "$(jq -r '.debug // true' /data/options.json 2>/dev/null)" = "true" ]; then
     (
         while true; do
             sleep 30
-            found="$(timeout 8 avahi-browse -apt 2>/dev/null | grep -Ei 'remotepairing|apple-mobdev|airplay|companion|raop' | cut -d';' -f2-5 | sort -u | head -20)"
-            total="$(timeout 8 avahi-browse -apt 2>/dev/null | wc -l)"
-            echo "[atvloadly add-on] mDNS: $total services seen; Apple ones:"
-            [ -n "$found" ] && echo "$found" | sed 's/^/[atvloadly add-on]   /' || echo "[atvloadly add-on]   (none)"
+            all="$(timeout 8 avahi-browse -apt 2>&1)"
+            total="$(printf '%s\n' "$all" | grep -c '^[+=]')"
+            echo "[atvloadly add-on] mDNS: $total services seen"
+            printf '%s\n' "$all" | grep -v '^[+=]' | head -5 | sed 's/^/[atvloadly add-on]   avahi-browse: /'
+            printf '%s\n' "$all" | grep '^[+=]' | cut -d';' -f2-5 | sort -u | head -15 | sed 's/^/[atvloadly add-on]   /'
         done
     ) &
 fi

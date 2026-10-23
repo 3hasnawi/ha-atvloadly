@@ -18,4 +18,6 @@ jobs:
           for i in $(seq 1 30); do curl -fsS -o /dev/null http://127.0.0.1:5533/ && break; sleep 2; done
           docker logs addon
           docker logs addon 2>&1 | grep -q "Avahi started"
+          # Avahi must join the runner's network interface, otherwise it can never see an Apple TV.
+          docker logs addon 2>&1 | grep -q "Joining mDNS multicast group on interface"
           curl -fsS -o /dev/null http://127.0.0.1:5533/
