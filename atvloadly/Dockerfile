@@ -1,5 +1,5 @@
 # The upstream image already contains atvloadly, PlumeImpactor and usbmuxd2.
-FROM bitxeno/atvloadly:latest
+FROM bitxeno/atvloadly:v0.8.1@sha256:1d0a795f01eacb9c13b8063e193567567bd909ce42b10605a5f871ba09be367e
 
 # Home Assistant OS has no Avahi for add-ons, so this add-on brings its own D-Bus system bus and Avahi daemon;
 # atvloadly talks to Avahi over D-Bus to find the Apple TV.
